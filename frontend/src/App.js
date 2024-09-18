@@ -4,6 +4,8 @@ import Camera from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 import './App.css';
 import HomePage from './components/HomePage';
+import { auth } from './Firebase';
+import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 const languages = {
   pt: {
@@ -11,28 +13,28 @@ const languages = {
     menu: 'Menu',
     capture: 'Capturar',
     upload: 'Carregar',
-    exit: 'Sair',
     gallery: 'Galeria',
     previous: 'Anterior',
     next: 'Próximo',
     noImages: 'Nenhuma imagem disponível para esta espécie.',
     predictionResult: 'Resultado da Previsão:',
     class: 'Classe:',
-    confidence: 'Confiança:'
+    confidence: 'Confiança:',
+    exit: 'Sair'
   },
   en: {
     title: 'Insect Classifier',
     menu: 'Menu',
     capture: 'Capture',
     upload: 'Upload',
-    exit: 'Exit',
     gallery: 'Gallery',
     previous: 'Previous',
     next: 'Next',
     noImages: 'No images available for this species.',
     predictionResult: 'Prediction Result:',
     class: 'Class:',
-    confidence: 'Confidence:'
+    confidence: 'Confidence:',
+    exit: 'Exit'
   }
 };
 
@@ -44,6 +46,7 @@ function App() {
   const [prediction, setPrediction] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [language, setLanguage] = useState('pt');
+  const [user, setUser] = useState(null);
 
   const species = [
     'aranhas', 'besouro_carabideo', 'crisopideo', 'joaninhas', 'libelulas',
@@ -51,6 +54,13 @@ function App() {
     'percevejo_geocoris', 'percevejo_orius', 'percevejo_pentatomideo',
     'percevejo_reduviideo', 'tesourinha', 'vespa_parasitoide', 'vespa_predadora'
   ];
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (selectedSpecies) {
@@ -63,11 +73,19 @@ function App() {
     }
   }, [selectedSpecies]);
 
+  const signIn = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .catch((error) => console.error('Error signing in with Google', error));
+  };
+
   const handleLogout = () => {
-    setView('home');
-    setSelectedSpecies(null);
-    setPrediction(null);
-    setCapturedImage(null);
+    signOut(auth).then(() => {
+      setView('home');
+      setSelectedSpecies(null);
+      setPrediction(null);
+      setCapturedImage(null);
+    }).catch((error) => console.error('Error signing out', error));
   };
 
   const handleFileSelect = (event) => {
@@ -100,13 +118,13 @@ function App() {
   };
 
   const renderHomePage = () => (
-    <HomePage onEnter={() => setView('menu')} language={language} />
+    <HomePage onEnter={user ? () => setView('menu') : signIn} language={language} user={user} />
   );
 
   const renderMenu = () => (
     <div className="menu">
       {species.map(s => (
-        <div key={s} className="species-item" onClick={() => { setSelectedSpecies(s); setView('gallery'); }}>
+        <div key={s} className="species-item" onClick={() => {setSelectedSpecies(s); setView('gallery');}}>
           <img src={`http://localhost:5000/galerias/${s}/botao_menu.jpg`} alt={s} />
           <p>{s.replace('_', ' ')}</p>
         </div>
@@ -163,13 +181,17 @@ function App() {
         </select>
       </header>
       <main>
-        {view === 'home' && renderHomePage()}
-        {view === 'menu' && renderMenu()}
-        {view === 'gallery' && renderGallery()}
-        {view === 'camera' && renderCamera()}
-        {view === 'result' && renderResult()}
+        {!user && view !== 'home' ? renderHomePage() : (
+          <>
+            {view === 'home' && renderHomePage()}
+            {view === 'menu' && renderMenu()}
+            {view === 'gallery' && renderGallery()}
+            {view === 'camera' && renderCamera()}
+            {view === 'result' && renderResult()}
+          </>
+        )}
       </main>
-      {view !== 'home' && (
+      {view !== 'home' && user && (
         <nav>
           <button onClick={() => setView('menu')}>
             <i className="fas fa-home"></i>

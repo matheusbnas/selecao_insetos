@@ -1,6 +1,6 @@
 import React from 'react';
 
-function HomePage({ onEnter, language }) {
+function HomePage({ onEnter, language, user }) {
   const content = {
     pt: {
       title: "Galeria de Insetos Inimigos Naturais de Pragas Agrícolas",
@@ -12,7 +12,8 @@ function HomePage({ onEnter, language }) {
         "Use nossa ferramenta de IA para identificar insetos em suas próprias fotos",
         "Contribua para práticas agrícolas mais sustentáveis"
       ],
-      enterButton: "Entrar na Galeria"
+      enterButton: "Entrar na Galeria",
+      signInButton: "Entrar com Google"
     },
     en: {
       title: "Gallery of Natural Enemy Insects of Agricultural Pests",
@@ -24,11 +25,12 @@ function HomePage({ onEnter, language }) {
         "Use our AI tool to identify insects in your own photos",
         "Contribute to more sustainable agricultural practices"
       ],
-      enterButton: "Enter Gallery"
+      enterButton: "Enter Gallery",
+      signInButton: "Sign in with Google"
     }
   };
 
-  const { title, subtitle, description, features, enterButton } = content[language];
+  const { title, subtitle, description, features, enterButton, signInButton } = content[language];
 
   return (
     <div className="home-page">
@@ -40,7 +42,11 @@ function HomePage({ onEnter, language }) {
           <li key={index}>{feature}</li>
         ))}
       </ul>
-      <button onClick={onEnter}>{enterButton}</button>
+      {user ? (
+        <button onClick={onEnter}>{enterButton}</button>
+      ) : (
+        <button onClick={onEnter}>{signInButton}</button>
+      )}
     </div>
   );
 }
