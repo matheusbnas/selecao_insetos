@@ -27,7 +27,7 @@ def classify_insect():
         return jsonify({'error': 'No image provided'}), 400
     
     image = request.files['image'].read()
-    image = Image.open(io.BytesIO(image))
+    image = Image.open(io.BytesIO(image)).convert('RGB')  # Converte para RGB
     image = image.resize((224, 224))
     image_array = img_to_array(image)
     image_array = np.expand_dims(image_array, axis=0)

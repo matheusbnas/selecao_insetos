@@ -8,14 +8,15 @@ from tensorflow.keras.models import Model
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from PIL import Image
 
 # Definir o diretório base do projeto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Carregar os dados dos arquivos JSON
-categories = ['aranhas', 'besouro_carabideo', 'crisopideo', 'joaninhas', 'libelulas', 'mosca_asilidea', 'mosca_delicopodidea'
-              ,'mosca_sirfidea', 'mosca_taquinidea', 'percevejo_geocoris', 'percevejo_orius', 'percevejo_pentatomideo', 'percevejo_reduviideo'
-              ,'tesourinha', 'vespa_parasitoide', 'vespa_predadora']
+categories = ['aranhas', 'besouro_carabideo', 'crisopideo', 'joaninhas', 'libelulas', 'mosca_asilidea', 'mosca_delicopodidea',
+              'mosca_sirfidea', 'mosca_taquinidea', 'percevejo_geocoris', 'percevejo_orius', 'percevejo_pentatomideo', 'percevejo_reduviideo',
+              'tesourinha', 'vespa_parasitoide', 'vespa_predadora']
 image_paths = []
 labels = []
 
@@ -38,6 +39,14 @@ print(df['class'].value_counts())
 
 # Dividir os dados em conjuntos de treino e teste
 train_df, test_df = train_test_split(df, test_size=0.2, random_state=42, stratify=df['class'])
+
+# Função para carregar e pré-processar imagens
+def load_and_preprocess_image(path, label):
+    image = tf.io.read_file(path)
+    image = tf.image.decode_jpeg(image, channels=3)
+    image = tf.image.convert_image_dtype(image, tf.float32)
+    image = tf.image.resize(image, [224, 224])
+    return image, label
 
 # Preparar os geradores de imagens
 train_datagen = ImageDataGenerator(

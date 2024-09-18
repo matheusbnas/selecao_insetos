@@ -4,12 +4,43 @@ import Camera from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 import './App.css';
 
+const languages = {
+  pt: {
+    title: 'Classificador de Insetos',
+    menu: 'Menu',
+    capture: 'Capturar',
+    upload: 'Carregar',
+    gallery: 'Galeria',
+    previous: 'Anterior',
+    next: 'Próximo',
+    noImages: 'Nenhuma imagem disponível para esta espécie.',
+    predictionResult: 'Resultado da Previsão:',
+    class: 'Classe:',
+    confidence: 'Confiança:'
+  },
+  en: {
+    title: 'Insect Classifier',
+    menu: 'Menu',
+    capture: 'Capture',
+    upload: 'Upload',
+    gallery: 'Gallery',
+    previous: 'Previous',
+    next: 'Next',
+    noImages: 'No images available for this species.',
+    predictionResult: 'Prediction Result:',
+    class: 'Class:',
+    confidence: 'Confidence:'
+  }
+};
+
 function App() {
   const [view, setView] = useState('menu');
   const [selectedSpecies, setSelectedSpecies] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [prediction, setPrediction] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [language, setLanguage] = useState('pt');
 
   const species = [
     'aranhas', 'besouro_carabideo', 'crisopideo', 'joaninhas', 'libelulas',
@@ -30,10 +61,13 @@ function App() {
   }, [selectedSpecies]);
 
   const handleFileSelect = (event) => {
-    classifyImage(event.target.files[0]);
+    const file = event.target.files[0];
+    setCapturedImage(URL.createObjectURL(file));
+    classifyImage(file);
   };
 
   const handleCameraCapture = (dataUri) => {
+    setCapturedImage(dataUri);
     fetch(dataUri)
       .then(res => res.blob())
       .then(blob => classifyImage(blob));
@@ -68,18 +102,22 @@ function App() {
 
   const renderGallery = () => (
     <div className="gallery">
-      <h2>{selectedSpecies.replace('_', ' ')} Gallery</h2>
+      <h2>{selectedSpecies.replace('_', ' ')} {languages[language].gallery}</h2>
       {images.length > 0 ? (
-        <div>
+        <div className="gallery-content">
           <img src={images[currentImageIndex]} alt={selectedSpecies} />
-          <div>
-            <button onClick={() => setCurrentImageIndex(i => (i > 0 ? i - 1 : images.length - 1))}>Previous</button>
-            <button onClick={() => setCurrentImageIndex(i => (i < images.length - 1 ? i + 1 : 0))}>Next</button>
+          <div className="gallery-controls">
+            <button onClick={() => setCurrentImageIndex(i => (i > 0 ? i - 1 : images.length - 1))}>
+              <i className="fas fa-chevron-left"></i> {languages[language].previous}
+            </button>
+            <p>{languages[language].gallery} {currentImageIndex + 1} / {images.length}</p>
+            <button onClick={() => setCurrentImageIndex(i => (i < images.length - 1 ? i + 1 : 0))}>
+              {languages[language].next} <i className="fas fa-chevron-right"></i>
+            </button>
           </div>
-          <p>Image {currentImageIndex + 1} of {images.length}</p>
         </div>
       ) : (
-        <p>No images available for this species.</p>
+        <p>{languages[language].noImages}</p>
       )}
     </div>
   );
@@ -92,16 +130,23 @@ function App() {
 
   const renderResult = () => (
     <div className="result">
-      <h2>Prediction Result:</h2>
-      <p>Class: {prediction.predicted_class}</p>
-      <p>Confidence: {(prediction.confidence * 100).toFixed(2)}%</p>
+      <h2>{languages[language].predictionResult}</h2>
+      {capturedImage && (
+        <img src={capturedImage} alt="Captured" className="captured-image" />
+      )}
+      <p>{languages[language].class} {prediction.predicted_class}</p>
+      <p>{languages[language].confidence} {(prediction.confidence * 100).toFixed(2)}%</p>
     </div>
   );
 
   return (
     <div className="App">
       <header>
-        <h1>Insect Classifier</h1>
+        <h1>{languages[language].title}</h1>
+        <select onChange={(e) => setLanguage(e.target.value)} value={language}>
+          <option value="pt">Português</option>
+          <option value="en">English</option>
+        </select>
       </header>
       <main>
         {view === 'menu' && renderMenu()}
@@ -109,11 +154,21 @@ function App() {
         {view === 'camera' && renderCamera()}
         {view === 'result' && renderResult()}
       </main>
-      <footer>
-        <button onClick={() => setView('menu')}>Menu</button>
-        <button onClick={() => setView('camera')}>Capture Photo</button>
-        <input type="file" onChange={handleFileSelect} accept="image/*" />
-      </footer>
+      <nav>
+        <button onClick={() => setView('menu')}>
+          <i className="fas fa-home"></i>
+          {languages[language].menu}
+        </button>
+        <button onClick={() => setView('camera')}>
+          <i className="fas fa-camera"></i>
+          {languages[language].capture}
+        </button>
+        <label className="file-input">
+          <input type="file" onChange={handleFileSelect} accept="image/*" />
+          <i className="fas fa-upload"></i>
+          {languages[language].upload}
+        </label>
+      </nav>
     </div>
   );
 }
