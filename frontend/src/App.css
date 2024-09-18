@@ -175,6 +175,68 @@ nav i {
   display: none;
 }
 
+.home-page {
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.home-page h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.home-page h2 {
+  font-size: 1.8rem;
+  color: #34495e;
+  margin-bottom: 1.5rem;
+}
+
+.home-page p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.home-page ul {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.home-page li {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.home-page li::before {
+  content: '✓';
+  color: #27ae60;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.home-page button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.home-page button:hover {
+  background-color: #2980b9;
+}
+
 @media (min-width: 768px) {
   header h1 {
     font-size: 2rem;
@@ -230,5 +292,19 @@ nav i {
 
   .menu {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page h1 {
+    font-size: 2rem;
+  }
+
+  .home-page h2 {
+    font-size: 1.5rem;
+  }
+
+  .home-page p, .home-page li {
+    font-size: 1rem;
   }
 }

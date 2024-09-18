@@ -3,6 +3,7 @@ import axios from 'axios';
 import Camera from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 import './App.css';
+import HomePage from './components/HomePage';
 
 const languages = {
   pt: {
@@ -34,7 +35,7 @@ const languages = {
 };
 
 function App() {
-  const [view, setView] = useState('menu');
+  const [view, setView] = useState('home');
   const [selectedSpecies, setSelectedSpecies] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
@@ -88,6 +89,10 @@ function App() {
       alert('Error classifying image. Please try again.');
     }
   };
+
+  const renderHomePage = () => (
+    <HomePage onEnter={() => setView('menu')} language={language} />
+  );
 
   const renderMenu = () => (
     <div className="menu">
@@ -149,26 +154,29 @@ function App() {
         </select>
       </header>
       <main>
+        {view === 'home' && renderHomePage()}
         {view === 'menu' && renderMenu()}
         {view === 'gallery' && renderGallery()}
         {view === 'camera' && renderCamera()}
         {view === 'result' && renderResult()}
       </main>
-      <nav>
-        <button onClick={() => setView('menu')}>
-          <i className="fas fa-home"></i>
-          {languages[language].menu}
-        </button>
-        <button onClick={() => setView('camera')}>
-          <i className="fas fa-camera"></i>
-          {languages[language].capture}
-        </button>
-        <label className="file-input">
-          <input type="file" onChange={handleFileSelect} accept="image/*" />
-          <i className="fas fa-upload"></i>
-          {languages[language].upload}
-        </label>
-      </nav>
+      {view !== 'home' && (
+        <nav>
+          <button onClick={() => setView('menu')}>
+            <i className="fas fa-home"></i>
+            {languages[language].menu}
+          </button>
+          <button onClick={() => setView('camera')}>
+            <i className="fas fa-camera"></i>
+            {languages[language].capture}
+          </button>
+          <label className="file-input">
+            <input type="file" onChange={handleFileSelect} accept="image/*" />
+            <i className="fas fa-upload"></i>
+            {languages[language].upload}
+          </label>
+        </nav>
+      )}
     </div>
   );
 }
