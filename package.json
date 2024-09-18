@@ -1,6 +1,39 @@
 {
+  "name": "insect-classifier-frontend",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "axios": "^1.7.7",
-    "react-webcam": "^7.2.0"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "axios": "^0.21.4",
+    "firebase": "^10.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-html5-camera-photo": "^1.5.11",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^4.2.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
