@@ -1,0 +1,4 @@
+.venv
+.env
+
+insect_classifier.h5
