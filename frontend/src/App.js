@@ -11,6 +11,7 @@ const languages = {
     menu: 'Menu',
     capture: 'Capturar',
     upload: 'Carregar',
+    exit: 'Sair',
     gallery: 'Galeria',
     previous: 'Anterior',
     next: 'Próximo',
@@ -24,6 +25,7 @@ const languages = {
     menu: 'Menu',
     capture: 'Capture',
     upload: 'Upload',
+    exit: 'Exit',
     gallery: 'Gallery',
     previous: 'Previous',
     next: 'Next',
@@ -61,6 +63,13 @@ function App() {
     }
   }, [selectedSpecies]);
 
+  const handleLogout = () => {
+    setView('home');
+    setSelectedSpecies(null);
+    setPrediction(null);
+    setCapturedImage(null);
+  };
+
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     setCapturedImage(URL.createObjectURL(file));
@@ -97,7 +106,7 @@ function App() {
   const renderMenu = () => (
     <div className="menu">
       {species.map(s => (
-        <div key={s} className="species-item" onClick={() => {setSelectedSpecies(s); setView('gallery');}}>
+        <div key={s} className="species-item" onClick={() => { setSelectedSpecies(s); setView('gallery'); }}>
           <img src={`http://localhost:5000/galerias/${s}/botao_menu.jpg`} alt={s} />
           <p>{s.replace('_', ' ')}</p>
         </div>
@@ -175,6 +184,10 @@ function App() {
             <i className="fas fa-upload"></i>
             {languages[language].upload}
           </label>
+          <button onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i>
+            {languages[language].exit}
+          </button>
         </nav>
       )}
     </div>
